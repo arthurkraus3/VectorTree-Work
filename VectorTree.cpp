@@ -34,9 +34,8 @@ float truncate(float input, int lastNBits) {
 
 void VectorTree(int n) {
   //Credit for the bones to this code goes to Alexei Tam
-
     /*
-    
+  
     My goal is to separately load up four different branches with different vector sizes
     
         Size 4: 1000 entries    
@@ -53,8 +52,8 @@ void VectorTree(int n) {
   std::unique_ptr<TFile> myFile = std::make_unique<TFile>("VectorTreeFile.root", "RECREATE");
   TTree *tree = new TTree("myTree","myTree");
  
- // tree->SetAutoFlush(0);
- // tree->SetAutoSave(0);
+  //tree->SetAutoFlush(0);
+  //tree->SetAutoSave(0);
 
   if(!myFile) {
     std::cout << "Error: file creation failed" << std::endl;
@@ -63,7 +62,7 @@ void VectorTree(int n) {
   //INITIALIZING VARIABLES
   std::cout << "initializing variables and vector" << std::endl;
   
-  const Int_t NEvents = 1000000; // N = 1,000,000
+  const Int_t NEvents = 150000; // N = 1,000,000
   Int_t NEntries3;
   
       //vectors
@@ -84,14 +83,15 @@ void VectorTree(int n) {
   int bSize = power*4000;
 
   tree->SetBasketSize("*",bSize);
-  
+  tree->SetMaxBasketSize(256000); // added June 7, 12:28 PM
+ 
   //===EVENTS LOOP===
   std::cout << "generating events..." << std::endl;
   
   for (int j = 0; j < NEvents; j++) {
     
     //randomizing number of entries
-    int NEntries3 = 1000;
+    int NEntries3 = 400;
     ::floatint_t truncated;
     
     //clearing events
@@ -101,7 +101,7 @@ void VectorTree(int n) {
     for(int a = 0; a < NEntries3; a++) {
 	if(a < NEntries3/2) { 
        		f3= gRandom->Rndm() * gRandom->Gaus(0,1);
-       		truncated.fvalue = ::truncate(f3,15); // 8 for 16 dp, 15 for 8 dp.
+       		truncated.fvalue = ::truncate(f3,16); // 8 for 16 dp, 15 for 8 dp.
 		vten3.emplace_back(truncated.fvalue);
 	} else  { 
 		f3 = 1;
